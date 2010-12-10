@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.dids.se/Paysup/BackendConfiguration" xmlns:tns="http://www.dids.se/Paysup/BackendConfiguration" elementFormDefault="qualified">
+
+    <element name="Configuration">
+        <complexType>
+            <sequence>
+                <element name="Name" type="string" />
+                <element name="CountryCode" type="string" />
+                <element name="Version" type="integer" />
+                <element name="AccountTypes">
+                    <complexType>
+                        <sequence>
+                            <element name="AccountType" type="string" minOccurs="1" maxOccurs="unbounded" />
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+</schema>
