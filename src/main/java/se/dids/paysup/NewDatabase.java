@@ -71,7 +71,7 @@ public class NewDatabase extends javax.swing.JFrame {
     databaseNameTextField = new javax.swing.JTextField();
     browseButton = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
-    jButton3 = new javax.swing.JButton();
+    createButton = new javax.swing.JButton();
     jCheckBox1 = new javax.swing.JCheckBox();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
@@ -95,10 +95,10 @@ public class NewDatabase extends javax.swing.JFrame {
       }
     });
 
-    jButton3.setText("Create");
-    jButton3.addActionListener(new java.awt.event.ActionListener() {
+    createButton.setText("Create");
+    createButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton3ActionPerformed(evt);
+        createButtonActionPerformed(evt);
       }
     });
 
@@ -122,7 +122,7 @@ public class NewDatabase extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
-            .addContainerGap(624, Short.MAX_VALUE))
+            .addContainerGap(306, Short.MAX_VALUE))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -132,7 +132,7 @@ public class NewDatabase extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                   .addComponent(browseButton)
-                  .addComponent(jButton3)))
+                  .addComponent(createButton)))
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addComponent(databaseNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -143,7 +143,7 @@ public class NewDatabase extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(backendComboBox, 0, 299, Short.MAX_VALUE))
               .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
-            .addGap(360, 360, 360))))
+            .addGap(25, 25, 25))))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,7 +169,7 @@ public class NewDatabase extends javax.swing.JFrame {
         .addGap(47, 47, 47)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jButton3))
+          .addComponent(createButton))
         .addContainerGap())
     );
 
@@ -180,19 +180,25 @@ public class NewDatabase extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
+      File newFile = new File(databaseLocationTextField.getText() +
+              System.getProperty("file.separator") +
+              databaseNameTextField.getText() +
+              "." +
+              Configuration.getInstance().getConfig().getString("database_name_extension"));
+      DbHandler.getInstance().initialize(newFile);
+      this.dispose();
+    }//GEN-LAST:event_createButtonActionPerformed
 
     private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
       JFileChooser fileChooser = new JFileChooser();
       int returnVal = fileChooser.showOpenDialog(this);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-        File file = fileChooser.getSelectedFile();
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+          File file = fileChooser.getSelectedFile();
           databaseNameTextField.setText(file.getAbsolutePath());
-    } else {
-        System.out.println("File access cancelled by user.");
-    }
+      } else {
+          System.out.println("File access cancelled by user.");
+      }
     }//GEN-LAST:event_browseButtonActionPerformed
 
     /**
@@ -209,10 +215,10 @@ public class NewDatabase extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox backendComboBox;
   private javax.swing.JButton browseButton;
+  private javax.swing.JButton createButton;
   private javax.swing.JTextField databaseLocationTextField;
   private javax.swing.JTextField databaseNameTextField;
   private javax.swing.JButton jButton2;
-  private javax.swing.JButton jButton3;
   private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;

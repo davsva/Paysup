@@ -56,6 +56,4 @@ public class Configuration {
       Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-
-
 }

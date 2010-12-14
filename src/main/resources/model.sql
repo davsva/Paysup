@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS Configuration
+;
 DROP TABLE IF EXISTS AccountTypes
 ;
 DROP TABLE IF EXISTS Suppliers
@@ -5,6 +7,11 @@ DROP TABLE IF EXISTS Suppliers
 DROP TABLE IF EXISTS PaymentFiles
 ;
 DROP TABLE IF EXISTS Payments
+;
+CREATE TABLE Configuration
+(
+  BackendFile TEXT PRIMARY KEY
+)
 ;
 CREATE TABLE AccountTypes
 (
@@ -37,9 +44,5 @@ CREATE TABLE Payments
 	Reference TEXT NOT NULL,
 	FOREIGN KEY(PaymentFileId) REFERENCES PaymentFiles(Id),
 	FOREIGN KEY(SupplierId) REFERENCES Suppliers(Id)
-) 
-;
-INSERT INTO AccountTypes (Name) VALUES ('BG')
-;
-INSERT INTO AccountTypes (Name) VALUES ('PG')
+)
 ;

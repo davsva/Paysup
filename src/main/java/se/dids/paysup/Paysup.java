@@ -20,26 +20,19 @@ public class Paysup {
       Configuration.getInstance().initialize();
 
       // Is this the first run ever?
-      boolean firstRun = false;
+      boolean tempFirstRun = false;
       if (Configuration.getInstance().getConfig().getProperty("first_run").equals("true")) {
-        firstRun = true;
+        tempFirstRun = true;
       }
-      if (firstRun) {
-        /* TODO
-          Configuration.getInstance().getConfig().setProperty("first_run", new Date().toString());
-          Configuration.getInstance().saveConfig();
-         */
-        System.out.println("Time to create a new database");
-        java.awt.EventQueue.invokeLater(new Runnable() {
-          public void run() {
-            new NewDatabase().setVisible(true);
-          }
-        });
-      } else {
-        System.out.println("Loading ");
+      final boolean firstRun = tempFirstRun;
 
-
-      }
+      // Launch the main window
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          MainFrame form = new MainFrame(firstRun);
+          form.showFrame();
+        }
+      });
     }
 
     /**
