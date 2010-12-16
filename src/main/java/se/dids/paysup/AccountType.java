@@ -9,6 +9,8 @@ import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
 import com.almworks.sqlite4java.SQLiteJob;
 import com.almworks.sqlite4java.SQLiteStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -59,6 +61,28 @@ class AccountType {
         }
       }
     }).complete();
+  }
+
+  public static List<AccountType> loadAll() {
+    return DbHandler.getInstance().getQueue().execute(new SQLiteJob<List>() {
+
+      protected List job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT Id, Name FROM AccountTypes");
+        try {
+          List l = new ArrayList();
+          while (st.step()) {
+            l.add(new AccountType(st.columnInt(0), st.columnString(1)));
+          }
+          return l;
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+  }
+
+  public String toString() {
+    return name;
   }
 
 }

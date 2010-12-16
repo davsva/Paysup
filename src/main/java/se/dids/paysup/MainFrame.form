@@ -49,16 +49,13 @@
               <Component id="jScrollPane1" min="-2" pref="122" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="totalAmountTextField" alignment="1" min="-2" pref="100" max="-2" attributes="0"/>
-                          <Component id="generateButton" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" alignment="1" pref="293" max="32767" attributes="0"/>
-                      </Group>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Component id="totalAmountTextField" alignment="1" min="-2" pref="100" max="-2" attributes="0"/>
+                      <Component id="generateButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" alignment="1" pref="293" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Component id="paymentTypesComboBox" min="-2" max="-2" attributes="0"/>
+                      <Component id="accountTypesComboBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="accountTextField" min="-2" pref="81" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -89,7 +86,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="1">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paymentTypesComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="accountTypesComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="accountTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="nameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -127,7 +124,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JList" name="jList1">
+        <Component class="javax.swing.JList" name="supplierList">
           <Properties>
             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
               <StringArray count="5">
@@ -138,6 +135,7 @@
                 <StringItem index="4" value="Item 5"/>
               </StringArray>
             </Property>
+            <Property name="selectionMode" type="int" value="0"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -152,7 +150,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="referenceTextField">
     </Component>
-    <Component class="javax.swing.JComboBox" name="paymentTypesComboBox">
+    <Component class="javax.swing.JComboBox" name="accountTypesComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>

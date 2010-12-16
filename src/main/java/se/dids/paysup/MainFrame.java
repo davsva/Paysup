@@ -11,14 +11,13 @@
 
 package se.dids.paysup;
 
-import com.almworks.sqlite4java.SQLiteConnection;
-import com.almworks.sqlite4java.SQLiteException;
-import com.almworks.sqlite4java.SQLiteJob;
-import com.almworks.sqlite4java.SQLiteStatement;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -56,13 +55,13 @@ public class MainFrame extends javax.swing.JFrame {
   private void initComponents() {
 
     jScrollPane1 = new javax.swing.JScrollPane();
-    jList1 = new javax.swing.JList();
+    supplierList = new javax.swing.JList();
     nameTextField = new javax.swing.JTextField();
     accountTextField = new javax.swing.JTextField();
     amountTextField = new javax.swing.JTextField();
     dateTextField = new javax.swing.JTextField();
     referenceTextField = new javax.swing.JTextField();
-    paymentTypesComboBox = new javax.swing.JComboBox();
+    accountTypesComboBox = new javax.swing.JComboBox();
     updateButton = new javax.swing.JButton();
     clearButton = new javax.swing.JButton();
     totalAmountTextField = new javax.swing.JTextField();
@@ -75,12 +74,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-    jList1.setModel(new javax.swing.AbstractListModel() {
+    supplierList.setModel(new javax.swing.AbstractListModel() {
       String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
       public int getSize() { return strings.length; }
       public Object getElementAt(int i) { return strings[i]; }
     });
-    jScrollPane1.setViewportView(jList1);
+    supplierList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    jScrollPane1.setViewportView(supplierList);
 
     updateButton.setText("Add");
     updateButton.addActionListener(new java.awt.event.ActionListener() {
@@ -129,14 +129,12 @@ public class MainFrame extends javax.swing.JFrame {
         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(totalAmountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(generateButton)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(totalAmountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(generateButton)
-              .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(paymentTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -160,7 +158,7 @@ public class MainFrame extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(paymentTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(18, 18, 18)
@@ -192,7 +190,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
       // Is this supplier already existing?
-      AccountType aT = AccountType.load((String)paymentTypesComboBox.getSelectedItem());
+      AccountType aT = (AccountType)accountTypesComboBox.getSelectedItem();
       Supplier sup = Supplier.load(aT.getId(), accountTextField.getText());
       if (sup == null) {
         sup = new Supplier(aT.getId(), accountTextField.getText(), nameTextField.getText());
@@ -204,47 +202,72 @@ public class MainFrame extends javax.swing.JFrame {
           sup.update();
         }
       }
+      updateSupplierList();
     }//GEN-LAST:event_updateButtonActionPerformed
+
+  public void updateSupplierList() {
+    DefaultListModel listModel = new DefaultListModel();
+    listModel.clear();
+    List l = Supplier.loadAll();
+    for (Iterator iter = l.iterator(); iter.hasNext();) {
+        listModel.addElement((Supplier)iter.next());
+    }
+    supplierList.setModel(listModel);
+    supplierList.addListSelectionListener(new ListSelectionListener() {
+
+      public void valueChanged(ListSelectionEvent e) {
+        if (! e.getValueIsAdjusting()) {
+          JList jL = (JList)e.getSource();
+          Supplier selectedSup = (Supplier)jL.getSelectedValue();
+          fastType(selectedSup);
+        }
+      }
+    });
+  }
+
+  private int getAccountTypeIndex(Supplier sup) {
+    int size = accountTypesComboBox.getModel().getSize();
+    for (int i = 0; i < size; i++) {
+      AccountType aT = (AccountType) accountTypesComboBox.getModel().getElementAt(i);
+      if (aT.getId() == sup.getAccountTypeId()) {
+        return i;
+      }
+    }
+    throw new RuntimeException("Account Type not found.");
+  }
+
+  private void fastType(Supplier sup) {
+    accountTypesComboBox.setSelectedIndex(getAccountTypeIndex(sup));
+    accountTextField.setText(sup.getAccountNo());
+    nameTextField.setText(sup.getName());
+  }
+
+  private void load() {
+    updateSupplierList();
+    List l = AccountType.loadAll();
+    for (Iterator iter = l.iterator(); iter.hasNext();) {
+      accountTypesComboBox.addItem((AccountType)iter.next());
+    }
+  }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField accountTextField;
+  private javax.swing.JComboBox accountTypesComboBox;
   private javax.swing.JTextField amountTextField;
   private javax.swing.JButton clearButton;
   private javax.swing.JTextField dateTextField;
   private javax.swing.JMenu fileMenu;
   private javax.swing.JButton generateButton;
-  private javax.swing.JList jList1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JTextField nameTextField;
   private javax.swing.JMenuItem newDatabaseMenuItem;
-  private javax.swing.JComboBox paymentTypesComboBox;
   private javax.swing.JTable paymentsTable;
   private javax.swing.JTextField referenceTextField;
+  private javax.swing.JList supplierList;
   private javax.swing.JTextField totalAmountTextField;
   private javax.swing.JButton updateButton;
   // End of variables declaration//GEN-END:variables
 
-  private void load() {
-    // Set the account types
-    List accountTypes = DbHandler.getInstance().getQueue().execute(new SQLiteJob<List>() {
-      protected List job(SQLiteConnection connection) throws SQLiteException {
-        List l = new ArrayList();
-        SQLiteStatement st = connection.prepare("SELECT Name FROM AccountTypes");
-        try {
-          while (st.step()) {
-            l.add(st.columnString(0));
-          }
-          return l;
-        } finally {
-          st.dispose();
-        }
-      }
-    }).complete();
-    for (Iterator iter = accountTypes.iterator(); iter.hasNext();) {
-      String accountType = (String) iter.next();
-      paymentTypesComboBox.addItem(accountType);
-    }
-  }
 }

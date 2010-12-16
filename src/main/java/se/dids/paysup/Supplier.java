@@ -8,6 +8,8 @@ import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
 import com.almworks.sqlite4java.SQLiteJob;
 import com.almworks.sqlite4java.SQLiteStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -85,6 +87,24 @@ class Supplier {
     }).complete();
   }
 
+  public static List<Supplier> loadAll() {
+    return DbHandler.getInstance().getQueue().execute(new SQLiteJob<List>() {
+
+      protected List job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT Id, AccountTypeId, AccountNo, Name FROM Suppliers ORDER BY Name ASC");
+        try {
+          List l = new ArrayList();
+          while (st.step()) {
+            l.add(new Supplier(st.columnInt(0), st.columnInt(1), st.columnString(2), st.columnString(3)));
+          }
+          return l;
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+  }
+
   public void insert() {
     final String fname = name;
     final int faccountTypeId = accountTypeId;
@@ -118,5 +138,9 @@ class Supplier {
         }
       }
     }).complete();
+  }
+
+  public String toString() {
+    return name;
   }
 }
