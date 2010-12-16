@@ -31,18 +31,20 @@ CREATE TABLE Suppliers
 CREATE TABLE PaymentFiles
 (
 	Id INTEGER PRIMARY KEY,
-	Created TEXT NOT NULL
+	Name TEXT NOT NULL,
+  Status TEXT NOT NULL
 ) 
 ;
 CREATE TABLE Payments
 (
 	Id INTEGER PRIMARY KEY,
-	SupplierId INTEGER NOT NULL,
 	PaymentFileId INTEGER NOT NULL,
-	Amount DOUBLE NOT NULL,
 	DueDate TEXT NOT NULL,
+  AccountTypeName TEXT NOT NULL,
+  AccountNo TEXT NOT NULL,
+	SupplierName TEXT NOT NULL,
+	Amount DOUBLE NOT NULL,
 	Reference TEXT NOT NULL,
-	FOREIGN KEY(PaymentFileId) REFERENCES PaymentFiles(Id),
-	FOREIGN KEY(SupplierId) REFERENCES Suppliers(Id)
+	FOREIGN KEY(PaymentFileId) REFERENCES PaymentFiles(Id)
 )
 ;
