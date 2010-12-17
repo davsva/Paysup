@@ -94,12 +94,26 @@ public class PaymentFile {
   }
 
   public void insert() {
+    id = DbHandler.getInstance().getQueue().execute(new SQLiteJob<Integer>() {
+
+      protected Integer job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT IFNULL(MAX(Id) + 1, 1) FROM PaymentFiles");
+        try {
+          st.step();
+          return st.columnInt(0);
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+
+    final int fid = id;
     final String fname = name;
     final String fstatus = status;
     DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
 
       protected Void job(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement st = connection.prepare("INSERT INTO PaymentFiles (Name, Status) VALUES (" + fname + ", '" + fstatus + "')");
+        SQLiteStatement st = connection.prepare("INSERT INTO PaymentFiles (Id, Name, Status) VALUES (" + fid + ", '" + fname + "', '" + fstatus + "')");
         try {
           st.step();
           return null;
@@ -108,6 +122,7 @@ public class PaymentFile {
         }
       }
     }).complete();
+
   }
 
   public String toString() {

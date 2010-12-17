@@ -9,6 +9,7 @@ import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
 import com.almworks.sqlite4java.SQLiteJob;
 import com.almworks.sqlite4java.SQLiteStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,17 @@ public class Payment {
 
   public Payment(int id, int paymentFileId, Date dueDate, String accountTypeName, String accountNo, String supplierName, Double amount, String reference) {
     this.id = id;
+    this.paymentFileId = paymentFileId;
+    this.dueDate = dueDate;
+    this.accountTypeName = accountTypeName;
+    this.accountNo = accountNo;
+    this.supplierName = supplierName;
+    this.amount = amount;
+    this.reference = reference;
+  }
+
+  public Payment(int paymentFileId, Date dueDate, String accountTypeName, String accountNo, String supplierName, Double amount, String reference) {
+    this.id = 0;
     this.paymentFileId = paymentFileId;
     this.dueDate = dueDate;
     this.accountTypeName = accountTypeName;
@@ -140,6 +152,20 @@ public class Payment {
   }
 
   public void insert() {
+    id = DbHandler.getInstance().getQueue().execute(new SQLiteJob<Integer>() {
+
+      protected Integer job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT IFNULL(MAX(Id) + 1, 1) FROM Payments");
+        try {
+          st.step();
+          return st.columnInt(0);
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+
+    final int fid = id;
     final int fpaymentFileId = paymentFileId;
     final String fdueDate = DateHelper.toIso8601(dueDate);
     final String faccountTypeName = accountTypeName;
@@ -147,11 +173,10 @@ public class Payment {
     final String fsupplierName = supplierName;
     final double famount = amount;
     final String freference = reference;
-
     DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
 
       protected Void job(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement st = connection.prepare("INSERT INTO Payments (PaymentFileId, DueDate, AccountTypeName, AccountNo, SupplierName, Amount, Reference) VALUES (" + fpaymentFileId + ", '" + fdueDate + ", '" + faccountTypeName + ", '" + faccountNo + ", '" + fsupplierName + ", '" + famount + ", '" + freference + "')");
+        SQLiteStatement st = connection.prepare("INSERT INTO Payments (Id, PaymentFileId, DueDate, AccountTypeName, AccountNo, SupplierName, Amount, Reference) VALUES (" + fid + ", " + fpaymentFileId + ", '" + fdueDate + "', '" + faccountTypeName + "', '" + faccountNo + "', '" + fsupplierName + "', " + famount + ", '" + freference + "')");
         try {
           st.step();
           return null;
@@ -161,4 +186,10 @@ public class Payment {
       }
     }).complete();
   }
+
+  public String[] getRowData() {
+    SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMdd");
+    return new String[] {sDF.format(dueDate), accountTypeName, accountNo, supplierName, amount.toString(), reference};
+  }
+
 }

@@ -74,7 +74,7 @@ class Supplier {
     return DbHandler.getInstance().getQueue().execute(new SQLiteJob<Supplier>() {
 
       protected Supplier job(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement st = connection.prepare("SELECT Id, AccountTypeId, AccountNo, Name FROM Suppliers WHERE AccountTypeId = " + faccountTypeId + " AND AccountNo = " + faccountNo);
+        SQLiteStatement st = connection.prepare("SELECT Id, AccountTypeId, AccountNo, Name FROM Suppliers WHERE AccountTypeId = " + faccountTypeId + " AND AccountNo = '" + faccountNo + "'");
         try {
           if (st.step()) {
             return new Supplier(st.columnInt(0), st.columnInt(1), st.columnString(2), st.columnString(3));
@@ -106,13 +106,27 @@ class Supplier {
   }
 
   public void insert() {
+    id = DbHandler.getInstance().getQueue().execute(new SQLiteJob<Integer>() {
+
+      protected Integer job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT IFNULL(MAX(Id) + 1, 1) FROM Suppliers");
+        try {
+          st.step();
+          return st.columnInt(0);
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+
+    final int fid = id;
     final String fname = name;
     final int faccountTypeId = accountTypeId;
     final String faccountNo = accountNo;
     DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
 
       protected Void job(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement st = connection.prepare("INSERT INTO Suppliers (AccountTypeId, AccountNo, Name) VALUES (" + faccountTypeId + ", '" + faccountNo + "', '" + fname + "')");
+        SQLiteStatement st = connection.prepare("INSERT INTO Suppliers (Id, AccountTypeId, AccountNo, Name) VALUES (" + fid + ", " + faccountTypeId + ", '" + faccountNo + "', '" + fname + "')");
         try {
           st.step();
           return null;

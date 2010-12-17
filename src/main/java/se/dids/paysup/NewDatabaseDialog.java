@@ -223,6 +223,7 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
       }).complete();
 
       // Set the backend file name
+      // TODO Maybe refactor and brake out the SQL
       DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
 
         protected Void job(SQLiteConnection connection) throws SQLiteException {
@@ -238,29 +239,18 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
       }).complete();
 
       // Set the account types
-      DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
-
-        protected Void job(SQLiteConnection connection) throws SQLiteException {
-          try {
-            JAXBContext jc = JAXBContext.newInstance("se.dids.paysup.backendconfiguration");
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            se.dids.paysup.backendconfiguration.Configuration configuration = (se.dids.paysup.backendconfiguration.Configuration) unmarshaller.unmarshal(new File((String) Configuration.getInstance().getConfig().getProperty("backend_dir") + System.getProperty("file.separator") + (String) backendComboBox.getSelectedItem()));
-            List accountTypeList = configuration.getAccountTypes().getAccountType();
-            for (Iterator iter = accountTypeList.iterator(); iter.hasNext();) {
-              String accountType = (String) iter.next();
-              SQLiteStatement st = connection.prepare("INSERT INTO AccountTypes (Name) VALUES ('" + accountType + "')");
-              try {
-                st.step();
-              } finally {
-                st.dispose();
-              }
-            }
-          } catch (JAXBException ex) {
-            Logger.getLogger(NewDatabaseDialog.class.getName()).log(Level.SEVERE, null, ex);
-          }
-          return null;
+      try {
+        JAXBContext jc = JAXBContext.newInstance("se.dids.paysup.backendconfiguration");
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        se.dids.paysup.backendconfiguration.Configuration configuration = (se.dids.paysup.backendconfiguration.Configuration) unmarshaller.unmarshal(new File((String) Configuration.getInstance().getConfig().getProperty("backend_dir") + System.getProperty("file.separator") + (String) backendComboBox.getSelectedItem()));
+        List accountTypeList = configuration.getAccountTypes().getAccountType();
+        for (Iterator iter = accountTypeList.iterator(); iter.hasNext();) {
+          AccountType aT = new AccountType((String)iter.next());
+          aT.insert();
         }
-      }).complete();
+      } catch (JAXBException ex) {
+        Logger.getLogger(NewDatabaseDialog.class.getName()).log(Level.SEVERE, null, ex);
+      }
 
       // Is this the default database?
       if (defaultDatabaseCheckBox.isSelected()) {

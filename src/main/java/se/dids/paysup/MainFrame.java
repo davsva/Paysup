@@ -12,12 +12,18 @@
 package se.dids.paysup;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,11 +32,13 @@ import javax.swing.event.ListSelectionListener;
 public class MainFrame extends javax.swing.JFrame {
 
     boolean firstRun;
+    PaymentFile paymentFile;
 
     /** Creates new form MainFrame */
     public MainFrame(boolean firstRun) {
         this.firstRun = firstRun;
         initComponents();
+        adjust();
     }
 
     public void showFrame() {
@@ -44,6 +52,7 @@ public class MainFrame extends javax.swing.JFrame {
       }
       load();
     }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -68,17 +77,18 @@ public class MainFrame extends javax.swing.JFrame {
     generateButton = new javax.swing.JButton();
     jScrollPane2 = new javax.swing.JScrollPane();
     paymentsTable = new javax.swing.JTable();
+    jLabel1 = new javax.swing.JLabel();
+    jLabel2 = new javax.swing.JLabel();
+    jLabel3 = new javax.swing.JLabel();
+    jLabel4 = new javax.swing.JLabel();
+    jLabel5 = new javax.swing.JLabel();
+    jLabel6 = new javax.swing.JLabel();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newDatabaseMenuItem = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-    supplierList.setModel(new javax.swing.AbstractListModel() {
-      String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-      public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
-    });
     supplierList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane1.setViewportView(supplierList);
 
@@ -90,21 +100,38 @@ public class MainFrame extends javax.swing.JFrame {
     });
 
     clearButton.setText("Clear");
+    clearButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        clearButtonActionPerformed(evt);
+      }
+    });
+
+    totalAmountTextField.setEditable(false);
 
     generateButton.setText("Generate");
 
     paymentsTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
+
       },
       new String [] {
-        "Title 1", "Title 2", "Title 3", "Title 4"
+        "Due Date", "Type", "Account No", "Name", "Amount", "Reference"
       }
     ));
+    paymentsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
     jScrollPane2.setViewportView(paymentsTable);
+
+    jLabel1.setText("Type");
+
+    jLabel2.setText("Account No");
+
+    jLabel3.setText("Supplier Name");
+
+    jLabel4.setText("Amount");
+
+    jLabel5.setText("Due Date");
+
+    jLabel6.setText("Reference");
 
     fileMenu.setText("File");
 
@@ -124,70 +151,89 @@ public class MainFrame extends javax.swing.JFrame {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+      .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 193, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(totalAmountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(generateButton)))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(amountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-              .addComponent(updateButton)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(clearButton))
-            .addComponent(referenceTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)))
-        .addGap(38, 38, 38))
+              .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(updateButton)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(clearButton))
+                .addComponent(jScrollPane2)
+                .addComponent(totalAmountTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(amountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(referenceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+            .addComponent(generateButton))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jLabel2)))
+        .addContainerGap(146, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGap(62, 62, 62)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(amountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(referenceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(updateButton)
-              .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, 0, 0, Short.MAX_VALUE))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap()
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        .addContainerGap(19, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel1)
+          .addComponent(jLabel2)
+          .addComponent(jLabel3)
+          .addComponent(jLabel4)
+          .addComponent(jLabel5)
+          .addComponent(jLabel6))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(amountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(referenceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(updateButton)
+          .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(totalAmountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(generateButton)
-        .addContainerGap())
+        .addGap(26, 26, 26))
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
     private void newDatabaseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDatabaseMenuItemActionPerformed
-      new NewDatabase().setVisible(true);
+        NewDatabaseDialog form = new NewDatabaseDialog(this, true);
+        form.setVisible(true);
     }//GEN-LAST:event_newDatabaseMenuItemActionPerformed
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
@@ -205,7 +251,26 @@ public class MainFrame extends javax.swing.JFrame {
         }
       }
       updateSupplierList();
+      if (paymentFile == null) {
+        paymentFile = new PaymentFile(DateHelper.toIso8601(new Date()), "NEW");
+        paymentFile.insert();
+      }
+      SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMdd");
+      Date dueDate = null;
+      try {
+        dueDate = sDF.parse(dateTextField.getText());
+      } catch (ParseException ex) {
+        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      Payment payment = new Payment(paymentFile.getId(), dueDate, aT.getName(), accountTextField.getText(), nameTextField.getText(), new Double(amountTextField.getText()), referenceTextField.getText());
+      payment.insert();
+      addToPaymentTable(payment);
+      resetInput();
     }//GEN-LAST:event_updateButtonActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+      resetInput();
+    }//GEN-LAST:event_clearButtonActionPerformed
 
   public void updateSupplierList() {
     DefaultListModel listModel = new DefaultListModel();
@@ -221,10 +286,24 @@ public class MainFrame extends javax.swing.JFrame {
         if (! e.getValueIsAdjusting()) {
           JList jL = (JList)e.getSource();
           Supplier selectedSup = (Supplier)jL.getSelectedValue();
-          fastType(selectedSup);
+          if (selectedSup != null) {
+            fastType(selectedSup);
+          }
         }
       }
     });
+  }
+
+  public void addToPaymentTable(Payment p) {
+    DefaultTableModel tableModel = (DefaultTableModel)paymentsTable.getModel();
+    tableModel.addRow(p.getRowData());
+    Double currentAmount = 0.0;
+    String strCurrentAmount = totalAmountTextField.getText();
+    if (! strCurrentAmount.isEmpty()) {
+      currentAmount = Double.valueOf(totalAmountTextField.getText());
+    }
+    currentAmount += p.getAmount();
+    totalAmountTextField.setText(currentAmount.toString());
   }
 
   private int getAccountTypeIndex(Supplier sup) {
@@ -242,6 +321,7 @@ public class MainFrame extends javax.swing.JFrame {
     accountTypesComboBox.setSelectedIndex(getAccountTypeIndex(sup));
     accountTextField.setText(sup.getAccountNo());
     nameTextField.setText(sup.getName());
+    amountTextField.requestFocus();
   }
 
   private void load() {
@@ -260,6 +340,12 @@ public class MainFrame extends javax.swing.JFrame {
   private javax.swing.JTextField dateTextField;
   private javax.swing.JMenu fileMenu;
   private javax.swing.JButton generateButton;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JMenuBar menuBar;
@@ -271,5 +357,24 @@ public class MainFrame extends javax.swing.JFrame {
   private javax.swing.JTextField totalAmountTextField;
   private javax.swing.JButton updateButton;
   // End of variables declaration//GEN-END:variables
+
+  private void adjust() {
+    paymentsTable.getColumnModel().getColumn(0).setPreferredWidth(75);
+    paymentsTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+    paymentsTable.getColumnModel().getColumn(2).setPreferredWidth(75);
+    paymentsTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+    paymentsTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+    paymentsTable.getColumnModel().getColumn(5).setPreferredWidth(150);
+  }
+
+  private void resetInput() {
+    accountTypesComboBox.setSelectedIndex(0);
+    accountTextField.setText(null);
+    nameTextField.setText(null);
+    amountTextField.setText(null);
+    dateTextField.setText(null);
+    referenceTextField.setText(null);
+    accountTypesComboBox.requestFocus();
+  }
 
 }

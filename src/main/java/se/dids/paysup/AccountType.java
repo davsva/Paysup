@@ -81,6 +81,36 @@ class AccountType {
     }).complete();
   }
 
+  public void insert() {
+    id = DbHandler.getInstance().getQueue().execute(new SQLiteJob<Integer>() {
+
+      protected Integer job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("SELECT IFNULL(MAX(Id) + 1, 1) FROM AccountTypes");
+        try {
+          st.step();
+          return st.columnInt(0);
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+
+    final int fid = id;
+    final String fname = name;
+    DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
+
+      protected Void job(SQLiteConnection connection) throws SQLiteException {
+        SQLiteStatement st = connection.prepare("INSERT INTO AccountType (Id, Name) VALUES (" + fid + ", '" + fname + "')");
+        try {
+          st.step();
+          return null;
+        } finally {
+          st.dispose();
+        }
+      }
+    }).complete();
+  }
+
   public String toString() {
     return name;
   }
