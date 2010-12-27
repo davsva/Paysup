@@ -50,6 +50,12 @@
             <version>${sqlite4java.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>libsqlite4java-linux-i386</artifactId>
+            <type>so</type>
+            <version>${sqlite4java.version}</version>
+        </dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.6</version>
@@ -97,6 +103,14 @@
                                     <artifactId>sqlite4java-win32-x64</artifactId>
                                     <version>${sqlite4java.version}</version>
                                     <type>dll</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.almworks.sqlite4java</groupId>
+                                    <artifactId>libsqlite4java-linux-i386</artifactId>
+                                    <version>${sqlite4java.version}</version>
+                                    <type>so</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/lib</outputDirectory>
                                 </artifactItem>

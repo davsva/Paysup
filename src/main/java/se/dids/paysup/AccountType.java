@@ -100,7 +100,7 @@ class AccountType {
     DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
 
       protected Void job(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement st = connection.prepare("INSERT INTO AccountType (Id, Name) VALUES (" + fid + ", '" + fname + "')");
+        SQLiteStatement st = connection.prepare("INSERT INTO AccountTypes (Id, Name) VALUES (" + fid + ", '" + fname + "')");
         try {
           st.step();
           return null;
