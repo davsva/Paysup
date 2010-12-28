@@ -6,6 +6,7 @@
 package se.dids.paysup;
 
 import java.util.Date;
+import java.util.Locale;
 
 /**
  *
@@ -18,6 +19,22 @@ public class Paysup {
 
     public void initialize(String args[]) {
       Configuration.getInstance().initialize();
+
+      // Set default locale
+      String strLocale = (String)Configuration.getInstance().getConfig().getProperty("default_locale");
+      if (strLocale != null && ! strLocale.isEmpty()) {
+        Locale locale = null;
+        String[] result = strLocale.split("_");
+        if (result.length == 3) {
+          locale = new Locale(result[0], result[1], result[2]);
+        } else if (result.length == 2) {
+          locale = new Locale(result[0], result[1]);
+        } else if (result.length == 1) {
+          locale = new Locale(result[0]);
+        }
+        System.out.println(locale.getLanguage() + "_" + locale.getCountry() + "_" + locale.getVariant());
+        Locale.setDefault(locale);
+      }
 
       // Is this the first run ever?
       boolean tempFirstRun = false;

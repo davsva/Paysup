@@ -57,7 +57,7 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
   }
 
   private void initDefaults() {
-    databaseNameTextField.setText((String) Configuration.getInstance().getConfig().getProperty("default_database_name"));
+    databaseNameTextField.setText((String) Configuration.getInstance().getConfig().getProperty(java.util.ResourceBundle.getBundle("PaysupResource").getString("DEFAULT_DATABASE_NAME")));
     String dir = new String();
     try {
       dir = new File(".").getCanonicalPath() + System.getProperty("file.separator") + (String) Configuration.getInstance().getConfig().getProperty("database_dir");
@@ -90,21 +90,22 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-    browseButton.setText("Browse...");
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("PaysupResource"); // NOI18N
+    browseButton.setText(bundle.getString("BROWSE...")); // NOI18N
     browseButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         browseButtonActionPerformed(evt);
       }
     });
 
-    jButton2.setText("Cancel");
+    jButton2.setText(bundle.getString("CANCEL")); // NOI18N
     jButton2.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButton2ActionPerformed(evt);
       }
     });
 
-    createButton.setText("Create");
+    createButton.setText(bundle.getString("CREATE")); // NOI18N
     createButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         createButtonActionPerformed(evt);
@@ -112,21 +113,20 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
     });
 
     defaultDatabaseCheckBox.setSelected(true);
-    defaultDatabaseCheckBox.setText("Make this the default database");
+    defaultDatabaseCheckBox.setText(bundle.getString("MAKE THIS THE DEFAULT DATABASE")); // NOI18N
 
-    jLabel1.setText("Create a New Database");
+    jLabel1.setText(bundle.getString("CREATE A NEW DATABASE")); // NOI18N
 
-    jLabel2.setText("Backend");
+    jLabel2.setText(bundle.getString("BACKEND")); // NOI18N
 
-    jLabel3.setText("Database Name");
+    jLabel3.setText(bundle.getString("DATABASE NAME")); // NOI18N
 
-    jLabel4.setText("Database Location");
+    jLabel4.setText(bundle.getString("DATABASE LOCATION")); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 400, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,25 +139,24 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                   .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING)
                   .addComponent(databaseLocationTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                   .addComponent(browseButton)
                   .addComponent(createButton)))
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addComponent(databaseNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(defaultDatabaseCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))
+                .addComponent(defaultDatabaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 240, Short.MAX_VALUE))
               .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addComponent(backendComboBox, 0, 307, Short.MAX_VALUE))
+                .addComponent(backendComboBox, 0, 321, Short.MAX_VALUE))
               .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
             .addGap(25, 25, 25))))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 300, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jLabel1)
@@ -194,7 +193,7 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
         File file = fileChooser.getSelectedFile();
         databaseNameTextField.setText(file.getAbsolutePath());
       } else {
-        System.out.println("File access cancelled by user.");
+        System.out.println(java.util.ResourceBundle.getBundle("PaysupResource").getString("FILE ACCESS CANCELLED BY USER."));
       }
 }//GEN-LAST:event_browseButtonActionPerformed
 
@@ -204,14 +203,14 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
 
     private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
       File newFile = new File(databaseLocationTextField.getText()
-              + System.getProperty("file.separator")
+              + System.getProperty(java.util.ResourceBundle.getBundle("PaysupResource").getString("FILE.SEPARATOR"))
               + databaseNameTextField.getText()
-              + "."
+              + java.util.ResourceBundle.getBundle("PaysupResource").getString(".")
               + Configuration.getInstance().getConfig().getString("database_name_extension"));
       DbHandler.getInstance().initialize(newFile);
 
       // Read in model.SQL (the DDL) into string
-      final String ddl = FileHelper.readFileAsString("target/classes/model.sql");
+      final String ddl = FileHelper.readFileAsString(java.util.ResourceBundle.getBundle("PaysupResource").getString("TARGET/CLASSES/MODEL.SQL"));
 
       // Initialize database
       DbHandler.getInstance().getQueue().execute(new SQLiteJob<Void>() {
@@ -228,7 +227,7 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
 
         protected Void job(SQLiteConnection connection) throws SQLiteException {
           String backend = (String) backendComboBox.getSelectedItem();
-          SQLiteStatement st = connection.prepare("INSERT INTO Configuration (BackendFile) VALUES ('" + backend + "')");
+          SQLiteStatement st = connection.prepare(java.util.ResourceBundle.getBundle("PaysupResource").getString("INSERT INTO CONFIGURATION (BACKENDFILE) VALUES ('") + backend + java.util.ResourceBundle.getBundle("PaysupResource").getString("')"));
           try {
             st.step();
             return null;
@@ -240,9 +239,9 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
 
       // Set the account types
       try {
-        JAXBContext jc = JAXBContext.newInstance("se.dids.paysup.backendconfiguration");
+        JAXBContext jc = JAXBContext.newInstance(java.util.ResourceBundle.getBundle("PaysupResource").getString("SE.DIDS.PAYSUP.BACKENDCONFIGURATION"));
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        se.dids.paysup.backendconfiguration.Configuration configuration = (se.dids.paysup.backendconfiguration.Configuration) unmarshaller.unmarshal(new File((String) Configuration.getInstance().getConfig().getProperty("backend_dir") + System.getProperty("file.separator") + (String) backendComboBox.getSelectedItem()));
+        se.dids.paysup.backendconfiguration.Configuration configuration = (se.dids.paysup.backendconfiguration.Configuration) unmarshaller.unmarshal(new File((String) Configuration.getInstance().getConfig().getProperty(java.util.ResourceBundle.getBundle("PaysupResource").getString("BACKEND_DIR")) + System.getProperty(java.util.ResourceBundle.getBundle("PaysupResource").getString("FILE.SEPARATOR")) + (String) backendComboBox.getSelectedItem()));
         List accountTypeList = configuration.getAccountTypes().getAccountType();
         for (Iterator iter = accountTypeList.iterator(); iter.hasNext();) {
           AccountType aT = new AccountType((String)iter.next());
@@ -255,7 +254,7 @@ public class NewDatabaseDialog extends javax.swing.JDialog {
       // Is this the default database?
       if (defaultDatabaseCheckBox.isSelected()) {
         try {
-          Configuration.getInstance().getConfig().setProperty("default_database", newFile.getCanonicalPath());
+          Configuration.getInstance().getConfig().setProperty(java.util.ResourceBundle.getBundle("PaysupResource").getString("DEFAULT_DATABASE"), newFile.getCanonicalPath());
           Configuration.getInstance().saveConfig();
         } catch (IOException ex) {
           Logger.getLogger(NewDatabaseDialog.class.getName()).log(Level.SEVERE, null, ex);

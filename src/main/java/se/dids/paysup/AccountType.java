@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author david
  */
-class AccountType {
+public class AccountType {
 
   private int id;
   private String name;
@@ -111,6 +111,7 @@ class AccountType {
     }).complete();
   }
 
+  @Override
   public String toString() {
     return name;
   }

@@ -11,16 +11,21 @@
 
 package se.dids.paysup;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
  * @author david
  */
 public class MainFrame extends javax.swing.JFrame {
+  private static final ResourceBundle paysupResource = ResourceBundle.getBundle("PaysupResource");
 
     boolean firstRun;
     PaymentFile paymentFile;
@@ -51,6 +57,7 @@ public class MainFrame extends javax.swing.JFrame {
         DbHandler.getInstance().initialize(oldFile);
       }
       load();
+      accountTypesComboBox.requestFocus();
     }
 
 
@@ -86,20 +93,58 @@ public class MainFrame extends javax.swing.JFrame {
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newDatabaseMenuItem = new javax.swing.JMenuItem();
+    preferencesMenuItem = new javax.swing.JMenuItem();
+    exitMenuItem = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
     supplierList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane1.setViewportView(supplierList);
 
-    updateButton.setText("Add");
+    nameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        nameTextFieldKeyTyped(evt);
+      }
+    });
+
+    accountTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        accountTextFieldKeyTyped(evt);
+      }
+    });
+
+    amountTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        amountTextFieldKeyTyped(evt);
+      }
+    });
+
+    dateTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        dateTextFieldKeyTyped(evt);
+      }
+    });
+
+    referenceTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        referenceTextFieldKeyTyped(evt);
+      }
+    });
+
+    accountTypesComboBox.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        accountTypesComboBoxKeyTyped(evt);
+      }
+    });
+
+    updateButton.setText(paysupResource.getString("ADD")); // NOI18N
     updateButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         updateButtonActionPerformed(evt);
       }
     });
 
-    clearButton.setText("Clear");
+    clearButton.setText(paysupResource.getString("CLEAR")); // NOI18N
     clearButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         clearButtonActionPerformed(evt);
@@ -107,8 +152,9 @@ public class MainFrame extends javax.swing.JFrame {
     });
 
     totalAmountTextField.setEditable(false);
+    totalAmountTextField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-    generateButton.setText("Generate");
+    generateButton.setText(paysupResource.getString("GENERATE")); // NOI18N
 
     paymentsTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
@@ -121,27 +167,44 @@ public class MainFrame extends javax.swing.JFrame {
     paymentsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
     jScrollPane2.setViewportView(paymentsTable);
 
-    jLabel1.setText("Type");
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("PaysupResource"); // NOI18N
+    jLabel1.setText(bundle.getString("MainFrame.jLabel1.text")); // NOI18N
 
-    jLabel2.setText("Account No");
+    jLabel2.setText(bundle.getString("MainFrame.jLabel2.text")); // NOI18N
 
-    jLabel3.setText("Supplier Name");
+    jLabel3.setText(bundle.getString("MainFrame.jLabel3.text")); // NOI18N
 
-    jLabel4.setText("Amount");
+    jLabel4.setText(bundle.getString("MainFrame.jLabel4.text")); // NOI18N
 
-    jLabel5.setText("Due Date");
+    jLabel5.setText(paysupResource.getString("DUE DATE")); // NOI18N
 
-    jLabel6.setText("Reference");
+    jLabel6.setText(paysupResource.getString("REFERENCE")); // NOI18N
 
-    fileMenu.setText("File");
+    fileMenu.setText(paysupResource.getString("FILE")); // NOI18N
 
-    newDatabaseMenuItem.setText("New Database...");
+    newDatabaseMenuItem.setText(paysupResource.getString("NEW DATABASE...")); // NOI18N
     newDatabaseMenuItem.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         newDatabaseMenuItemActionPerformed(evt);
       }
     });
     fileMenu.add(newDatabaseMenuItem);
+
+    preferencesMenuItem.setText(paysupResource.getString("PREFERENCES")); // NOI18N
+    preferencesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        preferencesMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(preferencesMenuItem);
+
+    exitMenuItem.setText(paysupResource.getString("EXIT")); // NOI18N
+    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        exitMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(exitMenuItem);
 
     menuBar.add(fileMenu);
 
@@ -197,7 +260,7 @@ public class MainFrame extends javax.swing.JFrame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(45, Short.MAX_VALUE))
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap(19, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -236,7 +299,7 @@ public class MainFrame extends javax.swing.JFrame {
         form.setVisible(true);
     }//GEN-LAST:event_newDatabaseMenuItemActionPerformed
 
-    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
+    private void registerInput() {
       // Is this supplier already existing?
       AccountType aT = (AccountType)accountTypesComboBox.getSelectedItem();
       Supplier sup = Supplier.load(aT.getId(), accountTextField.getText());
@@ -255,22 +318,97 @@ public class MainFrame extends javax.swing.JFrame {
         paymentFile = new PaymentFile(DateHelper.toIso8601(new Date()), "NEW");
         paymentFile.insert();
       }
-      SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMdd");
+      SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMDD");
       Date dueDate = null;
       try {
         dueDate = sDF.parse(dateTextField.getText());
       } catch (ParseException ex) {
         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
       }
-      Payment payment = new Payment(paymentFile.getId(), dueDate, aT.getName(), accountTextField.getText(), nameTextField.getText(), new Double(amountTextField.getText()), referenceTextField.getText());
+      double amount;
+      try {
+        amount = NumberFormat.getInstance().parse(amountTextField.getText()).doubleValue();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("PaysupResource").getString("AMOUNT_FORMAT_ERROR"));
+        amountTextField.requestFocus();
+        return;
+      }
+      Payment payment = new Payment(paymentFile.getId(), dueDate, aT.getName(), accountTextField.getText(), nameTextField.getText(), amount, referenceTextField.getText());
       payment.insert();
       addToPaymentTable(payment);
       resetInput();
+    }
+
+    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
+      registerInput();
     }//GEN-LAST:event_updateButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
       resetInput();
     }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      System.exit(0);
+    }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    private void accountTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_accountTextFieldKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        try {
+          AccountType aT = (AccountType)accountTypesComboBox.getSelectedItem();
+          selectSupplier(aT.getId(), accountTextField.getText());
+        } catch (NotFoundException nfe) {
+          nameTextField.requestFocus();
+        }
+      }
+    }//GEN-LAST:event_accountTextFieldKeyTyped
+
+    private void accountTypesComboBoxKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_accountTypesComboBoxKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        accountTextField.requestFocus();
+      }
+    }//GEN-LAST:event_accountTypesComboBoxKeyTyped
+
+    private void amountTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_amountTextFieldKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        dateTextField.requestFocus();
+      }
+    }//GEN-LAST:event_amountTextFieldKeyTyped
+
+    private void dateTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dateTextFieldKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        referenceTextField.requestFocus();
+      }
+    }//GEN-LAST:event_dateTextFieldKeyTyped
+
+    private void referenceTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_referenceTextFieldKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        registerInput();
+      }
+    }//GEN-LAST:event_referenceTextFieldKeyTyped
+
+    private void nameTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameTextFieldKeyTyped
+      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+        amountTextField.requestFocus();
+      }
+    }//GEN-LAST:event_nameTextFieldKeyTyped
+
+    private void preferencesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesMenuItemActionPerformed
+      PreferencesDialog form = new PreferencesDialog(this, true);
+      form.setVisible(true);
+    }//GEN-LAST:event_preferencesMenuItemActionPerformed
+
+  private void selectSupplier(int accountTypeId, String accountNo) throws NotFoundException {
+    DefaultListModel listModel = (DefaultListModel)supplierList.getModel();
+    Enumeration e = listModel.elements();
+    while (e.hasMoreElements()) {
+      Supplier sup = (Supplier)e.nextElement();
+      if (sup.getAccountTypeId() == accountTypeId && sup.getAccountNo().equals(accountNo)) {
+        supplierList.setSelectedValue(sup, true);
+        return;
+      }
+    }
+    throw new NotFoundException();
+  }
 
   public void updateSupplierList() {
     DefaultListModel listModel = new DefaultListModel();
@@ -297,28 +435,31 @@ public class MainFrame extends javax.swing.JFrame {
   public void addToPaymentTable(Payment p) {
     DefaultTableModel tableModel = (DefaultTableModel)paymentsTable.getModel();
     tableModel.addRow(p.getRowData());
-    Double currentAmount = 0.0;
-    String strCurrentAmount = totalAmountTextField.getText();
-    if (! strCurrentAmount.isEmpty()) {
-      currentAmount = Double.valueOf(totalAmountTextField.getText());
+    double currentAmount = 0.0;
+    try {
+      currentAmount = NumberFormat.getInstance().parse(totalAmountTextField.getText()).doubleValue();
+    } catch (ParseException ignored) {
     }
     currentAmount += p.getAmount();
-    totalAmountTextField.setText(currentAmount.toString());
+    NumberFormat nF = NumberFormat.getInstance();
+    nF.setMaximumFractionDigits(2);
+    nF.setMinimumFractionDigits(2);
+    totalAmountTextField.setText(nF.format(currentAmount));
   }
 
-  private int getAccountTypeIndex(Supplier sup) {
+  private int getAccountTypeIndex(int accountTypeId) {
     int size = accountTypesComboBox.getModel().getSize();
     for (int i = 0; i < size; i++) {
       AccountType aT = (AccountType) accountTypesComboBox.getModel().getElementAt(i);
-      if (aT.getId() == sup.getAccountTypeId()) {
+      if (aT.getId() == accountTypeId) {
         return i;
       }
     }
-    throw new RuntimeException("Account Type not found.");
+    throw new RuntimeException(paysupResource.getString("ACCOUNT TYPE NOT FOUND."));
   }
 
   private void fastType(Supplier sup) {
-    accountTypesComboBox.setSelectedIndex(getAccountTypeIndex(sup));
+    accountTypesComboBox.setSelectedIndex(getAccountTypeIndex(sup.getAccountTypeId()));
     accountTextField.setText(sup.getAccountNo());
     nameTextField.setText(sup.getName());
     amountTextField.requestFocus();
@@ -338,6 +479,7 @@ public class MainFrame extends javax.swing.JFrame {
   private javax.swing.JTextField amountTextField;
   private javax.swing.JButton clearButton;
   private javax.swing.JTextField dateTextField;
+  private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu fileMenu;
   private javax.swing.JButton generateButton;
   private javax.swing.JLabel jLabel1;
@@ -352,6 +494,7 @@ public class MainFrame extends javax.swing.JFrame {
   private javax.swing.JTextField nameTextField;
   private javax.swing.JMenuItem newDatabaseMenuItem;
   private javax.swing.JTable paymentsTable;
+  private javax.swing.JMenuItem preferencesMenuItem;
   private javax.swing.JTextField referenceTextField;
   private javax.swing.JList supplierList;
   private javax.swing.JTextField totalAmountTextField;
