@@ -13,9 +13,14 @@ package se.dids.paysup;
 
 import java.io.File;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -43,6 +48,13 @@ public class PreferencesDialog extends javax.swing.JDialog {
     localeLabel = new javax.swing.JLabel();
     okButton = new javax.swing.JButton();
     cancelButton = new javax.swing.JButton();
+    dueDateWarnPanel = new javax.swing.JPanel();
+    minLabel = new javax.swing.JLabel();
+    maxSpinner = new javax.swing.JSpinner();
+    maxLabel = new javax.swing.JLabel();
+    minSpinner = new javax.swing.JSpinner();
+    minPostLabel = new javax.swing.JLabel();
+    maxPostLabel = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -63,6 +75,52 @@ public class PreferencesDialog extends javax.swing.JDialog {
       }
     });
 
+    dueDateWarnPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Due Date Warning Interval"));
+    dueDateWarnPanel.setName("null"); // NOI18N
+
+    minLabel.setText("Min");
+
+    maxLabel.setText("Max");
+
+    minPostLabel.setText("days from today");
+
+    maxPostLabel.setText("days from today");
+
+    javax.swing.GroupLayout dueDateWarnPanelLayout = new javax.swing.GroupLayout(dueDateWarnPanel);
+    dueDateWarnPanel.setLayout(dueDateWarnPanelLayout);
+    dueDateWarnPanelLayout.setHorizontalGroup(
+      dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(dueDateWarnPanelLayout.createSequentialGroup()
+        .addGroup(dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(minLabel)
+          .addComponent(maxLabel))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(dueDateWarnPanelLayout.createSequentialGroup()
+            .addComponent(maxSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(maxPostLabel))
+          .addGroup(dueDateWarnPanelLayout.createSequentialGroup()
+            .addComponent(minSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(minPostLabel)))
+        .addContainerGap(42, Short.MAX_VALUE))
+    );
+    dueDateWarnPanelLayout.setVerticalGroup(
+      dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(dueDateWarnPanelLayout.createSequentialGroup()
+        .addGroup(dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(minLabel)
+          .addComponent(minSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(minPostLabel))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(dueDateWarnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(maxLabel)
+          .addComponent(maxSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(maxPostLabel))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -70,12 +128,15 @@ public class PreferencesDialog extends javax.swing.JDialog {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(localeLabel)
-          .addComponent(cancelButton))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(localeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(okButton))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(cancelButton)
+            .addGap(165, 165, 165)
+            .addComponent(okButton))
+          .addComponent(dueDateWarnPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(localeLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(localeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -85,10 +146,12 @@ public class PreferencesDialog extends javax.swing.JDialog {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(localeLabel)
           .addComponent(localeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dueDateWarnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(cancelButton)
-          .addComponent(okButton))
+          .addComponent(okButton)
+          .addComponent(cancelButton))
         .addContainerGap())
     );
 
@@ -96,11 +159,29 @@ public class PreferencesDialog extends javax.swing.JDialog {
   }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+      boolean changed = false;
+      // Check Locale
       String selectedLocale = (String)localeComboBox.getSelectedItem();
       if (! selectedLocale.equals((String)Configuration.getInstance().getConfig().getProperty("default_locale"))) {
-        Configuration.getInstance().getConfig().setProperty("default_locale", selectedLocale);
-        Configuration.getInstance().saveConfig();
+        Configuration.getInstance().getConfig().setProperty("default_locale", selectedLocale);        
         JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("PaysupResource").getString("APPLICATION_RESTART_REQUIRED"));
+        changed = true;
+      }
+      // Check minimum due date warning value
+      String minSpinnerValue = NumberFormat.getInstance().format(minSpinner.getValue());
+      if (! minSpinnerValue.equals((String)Configuration.getInstance().getConfig().getProperty("warn_due_date_min"))) {
+        Configuration.getInstance().getConfig().setProperty("warn_due_date_min", minSpinnerValue);
+        changed = true;
+      }
+      // Check maximum due date warning value
+      String maxSpinnerValue = NumberFormat.getInstance().format(maxSpinner.getValue());
+      if (! maxSpinnerValue.equals((String)Configuration.getInstance().getConfig().getProperty("warn_due_date_max"))) {
+        Configuration.getInstance().getConfig().setProperty("warn_due_date_max", maxSpinnerValue);
+        changed = true;
+      }
+
+      if (changed) {
+        Configuration.getInstance().saveConfig();
       }
       this.dispose();
     }//GEN-LAST:event_okButtonActionPerformed
@@ -128,12 +209,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancelButton;
+  private javax.swing.JPanel dueDateWarnPanel;
   private javax.swing.JComboBox localeComboBox;
   private javax.swing.JLabel localeLabel;
+  private javax.swing.JLabel maxLabel;
+  private javax.swing.JLabel maxPostLabel;
+  private javax.swing.JSpinner maxSpinner;
+  private javax.swing.JLabel minLabel;
+  private javax.swing.JLabel minPostLabel;
+  private javax.swing.JSpinner minSpinner;
   private javax.swing.JButton okButton;
   // End of variables declaration//GEN-END:variables
 
   private void load() {
+    this.setTitle("Preferences");
     localeComboBox.addItem("default");
 
     // Load combo box with available locales
@@ -161,6 +250,29 @@ public class PreferencesDialog extends javax.swing.JDialog {
     // Select current locale in the combo box
     localeComboBox.setSelectedItem((String)Configuration.getInstance().getConfig().getProperty("default_locale"));
 
+    // Set the min and max values of the due date warning interval
+    int warnDueDateMin = 0;
+    try {
+      warnDueDateMin = NumberFormat.getInstance().parse((String) Configuration.getInstance().getConfig().getProperty("warn_due_date_min")).intValue();
+    } catch (ParseException ex) {
+      Logger.getLogger(PreferencesDialog.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    SpinnerModel minModel = new SpinnerNumberModel(warnDueDateMin, //initial value
+                                                  -1000, //min
+                                                  1000,  //max
+                                                  1);   //step
+    minSpinner.setModel(minModel);
+    int warnDueDateMax = 0;
+    try {
+      warnDueDateMax = NumberFormat.getInstance().parse((String) Configuration.getInstance().getConfig().getProperty("warn_due_date_max")).intValue();
+    } catch (ParseException ex) {
+      Logger.getLogger(PreferencesDialog.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    SpinnerModel maxModel = new SpinnerNumberModel(warnDueDateMax, //initial value
+                                                  -1000, //min
+                                                  1000,  //max
+                                                  1);   //step
+    maxSpinner.setModel(maxModel);
   }
 
 }

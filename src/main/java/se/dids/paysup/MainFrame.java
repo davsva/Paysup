@@ -11,24 +11,37 @@
 
 package se.dids.paysup;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -36,29 +49,27 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MainFrame extends javax.swing.JFrame {
   private static final ResourceBundle paysupResource = ResourceBundle.getBundle("PaysupResource");
+  boolean firstRun;
+  PaymentFile paymentFile;
 
-    boolean firstRun;
-    PaymentFile paymentFile;
+  /** Creates new form MainFrame */
+  public MainFrame(boolean firstRun) {
+      this.firstRun = firstRun;
+      initComponents();
+      adjust();
+  }
 
-    /** Creates new form MainFrame */
-    public MainFrame(boolean firstRun) {
-        this.firstRun = firstRun;
-        initComponents();
-        adjust();
+  public void showFrame() {
+    setVisible(true);
+    if (firstRun) {
+      NewDatabaseDialog form = new NewDatabaseDialog(this, true);
+      form.setVisible(true);
+    } else {
+      File oldFile = new File((String) Configuration.getInstance().getConfig().getProperty("default_database"));
+      DbHandler.getInstance().initialize(oldFile);
     }
-
-    public void showFrame() {
-      setVisible(true);
-      if (firstRun) {
-        NewDatabaseDialog form = new NewDatabaseDialog(this, true);
-        form.setVisible(true);
-      } else {
-        File oldFile = new File((String)Configuration.getInstance().getConfig().getProperty("default_database"));
-        DbHandler.getInstance().initialize(oldFile);
-      }
-      load();
-      accountTypesComboBox.requestFocus();
-    }
+    load();
+  }
 
 
     /** This method is called from within the constructor to
@@ -77,7 +88,6 @@ public class MainFrame extends javax.swing.JFrame {
     amountTextField = new javax.swing.JTextField();
     dateTextField = new javax.swing.JTextField();
     referenceTextField = new javax.swing.JTextField();
-    accountTypesComboBox = new javax.swing.JComboBox();
     updateButton = new javax.swing.JButton();
     clearButton = new javax.swing.JButton();
     totalAmountTextField = new javax.swing.JTextField();
@@ -90,6 +100,7 @@ public class MainFrame extends javax.swing.JFrame {
     jLabel4 = new javax.swing.JLabel();
     jLabel5 = new javax.swing.JLabel();
     jLabel6 = new javax.swing.JLabel();
+    accountTypesComboBox = new javax.swing.JComboBox();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newDatabaseMenuItem = new javax.swing.JMenuItem();
@@ -131,12 +142,6 @@ public class MainFrame extends javax.swing.JFrame {
       }
     });
 
-    accountTypesComboBox.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyTyped(java.awt.event.KeyEvent evt) {
-        accountTypesComboBoxKeyTyped(evt);
-      }
-    });
-
     updateButton.setText(paysupResource.getString("ADD")); // NOI18N
     updateButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -158,13 +163,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     paymentsTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
-
       },
       new String [] {
-        "Due Date", "Type", "Account No", "Name", "Amount", "Reference"
+        paysupResource.getString("MainFrame.jLabel1.text"), paysupResource.getString("MainFrame.jLabel2.text"), paysupResource.getString("MainFrame.jLabel3.text"), paysupResource.getString("MainFrame.jLabel4.text"), paysupResource.getString("DUE DATE"), paysupResource.getString("REFERENCE")
       }
-    ));
-    paymentsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+    ) {
+    });
+    paymentsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
     jScrollPane2.setViewportView(paymentsTable);
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("PaysupResource"); // NOI18N
@@ -274,10 +279,10 @@ public class MainFrame extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(accountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(amountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(referenceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(referenceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(accountTypesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(updateButton)
@@ -318,13 +323,44 @@ public class MainFrame extends javax.swing.JFrame {
         paymentFile = new PaymentFile(DateHelper.toIso8601(new Date()), "NEW");
         paymentFile.insert();
       }
-      SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMDD");
+      SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMdd");
       Date dueDate = null;
       try {
         dueDate = sDF.parse(dateTextField.getText());
       } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("PaysupResource").getString("DATE_FORMAT_ERROR"));
+        dateTextField.requestFocus();
+        return;
+      }
+
+      // Check due date interval
+      Calendar dueDateCal = Calendar.getInstance();
+      dueDateCal.setTime(dueDate);
+
+      int warnDueDateMin = 0;
+      try {
+        warnDueDateMin = NumberFormat.getInstance().parse((String) Configuration.getInstance().getConfig().getProperty("warn_due_date_min")).intValue();
+      } catch (ParseException ex) {
         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
       }
+      Calendar minCal = Calendar.getInstance();
+      minCal.add(Calendar.DATE, warnDueDateMin);
+      if (dueDateCal.before(minCal)) {
+        JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("PaysupResource").getString("WARN_DUE_DATE_MIN"));
+      }
+
+      int warnDueDateMax = 0;
+      try {
+        warnDueDateMax = NumberFormat.getInstance().parse((String) Configuration.getInstance().getConfig().getProperty("warn_due_date_max")).intValue();
+      } catch (ParseException ex) {
+        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      Calendar maxCal = Calendar.getInstance();
+      maxCal.add(Calendar.DATE, warnDueDateMax);
+      if (dueDateCal.after(maxCal)) {
+        JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("PaysupResource").getString("WARN_DUE_DATE_MAX"));
+      }
+
       double amount;
       try {
         amount = NumberFormat.getInstance().parse(amountTextField.getText()).doubleValue();
@@ -361,12 +397,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
       }
     }//GEN-LAST:event_accountTextFieldKeyTyped
-
-    private void accountTypesComboBoxKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_accountTypesComboBoxKeyTyped
-      if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
-        accountTextField.requestFocus();
-      }
-    }//GEN-LAST:event_accountTypesComboBoxKeyTyped
 
     private void amountTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_amountTextFieldKeyTyped
       if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
@@ -468,10 +498,42 @@ public class MainFrame extends javax.swing.JFrame {
   private void load() {
     updateSupplierList();
     List l = AccountType.loadAll();
-    for (Iterator iter = l.iterator(); iter.hasNext();) {
-      accountTypesComboBox.addItem((AccountType)iter.next());
+    Iterator<AccountType> iterator = l.iterator();
+    while (iterator.hasNext()) {
+      accountTypesComboBox.addItem(iterator.next());
     }
+
+    accountTypesComboBox.addKeyListener(new java.awt.event.KeyAdapter() {
+      @Override
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+          accountTextField.requestFocus();
+        }
+        // The 0-key or the down arrow can be used to step 1 down
+        else if(evt.getKeyChar() == KeyEvent.VK_0 || evt.getKeyChar() == KeyEvent.VK_DOWN) {
+          int curIndex = accountTypesComboBox.getSelectedIndex();
+          int size = accountTypesComboBox.getItemCount() - 1;
+          if (curIndex + 1 <= size) {
+            accountTypesComboBox.setSelectedIndex(curIndex + 1);
+          } else {
+            accountTypesComboBox.setSelectedIndex(0);
+          }
+        }
+        // The 1-key or the up arrow can be used to step 1 up
+        else if (evt.getKeyChar() == KeyEvent.VK_1 || evt.getKeyChar() == KeyEvent.VK_UP) {
+          int curIndex = accountTypesComboBox.getSelectedIndex();
+          int size = accountTypesComboBox.getItemCount() - 1;
+          if (curIndex - 1 >= 0) {
+            accountTypesComboBox.setSelectedIndex(curIndex - 1);
+          } else {
+            accountTypesComboBox.setSelectedIndex(0);
+          }
+        }
+      }
+    });
+    accountTypesComboBox.requestFocus();
   }
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField accountTextField;
@@ -502,12 +564,21 @@ public class MainFrame extends javax.swing.JFrame {
   // End of variables declaration//GEN-END:variables
 
   private void adjust() {
-    paymentsTable.getColumnModel().getColumn(0).setPreferredWidth(75);
-    paymentsTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-    paymentsTable.getColumnModel().getColumn(2).setPreferredWidth(75);
-    paymentsTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-    paymentsTable.getColumnModel().getColumn(4).setPreferredWidth(50);
-    paymentsTable.getColumnModel().getColumn(5).setPreferredWidth(150);
+//    paymentsTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+//    paymentsTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+//    paymentsTable.getColumnModel().getColumn(2).setPreferredWidth(75);
+//    paymentsTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+//    paymentsTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+//    paymentsTable.getColumnModel().getColumn(5).setPreferredWidth(200);
+    TableColumn tC4 = paymentsTable.getColumnModel().getColumn(4);
+    tC4.setCellRenderer(new DefaultTableCellRenderer() {
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component myself = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        setHorizontalAlignment(SwingConstants.RIGHT);
+        return myself;
+      }
+    });
   }
 
   private void resetInput() {

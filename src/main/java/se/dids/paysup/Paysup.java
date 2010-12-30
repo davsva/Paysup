@@ -32,7 +32,6 @@ public class Paysup {
         } else if (result.length == 1) {
           locale = new Locale(result[0]);
         }
-        System.out.println(locale.getLanguage() + "_" + locale.getCountry() + "_" + locale.getVariant());
         Locale.setDefault(locale);
       }
 

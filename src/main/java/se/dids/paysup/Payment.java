@@ -9,6 +9,7 @@ import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteException;
 import com.almworks.sqlite4java.SQLiteJob;
 import com.almworks.sqlite4java.SQLiteStatement;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -189,7 +190,10 @@ public class Payment {
 
   public String[] getRowData() {
     SimpleDateFormat sDF = new SimpleDateFormat("yyyyMMdd");
-    return new String[] {sDF.format(dueDate), accountTypeName, accountNo, supplierName, amount.toString(), reference};
+    NumberFormat nF = NumberFormat.getInstance();
+    nF.setMaximumFractionDigits(2);
+    nF.setMinimumFractionDigits(2);
+    return new String[] {accountTypeName, accountNo, supplierName, nF.format(amount), sDF.format(dueDate), reference};
   }
 
 }

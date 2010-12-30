@@ -144,10 +144,10 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="accountTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="nameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="accountTypesComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="dateTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="amountTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="referenceTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="accountTypesComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -208,16 +208,6 @@
         <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="referenceTextFieldKeyTyped"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JComboBox" name="accountTypesComboBox">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="accountTypesComboBoxKeyTyped"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="updateButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -260,17 +250,10 @@
       <SubComponents>
         <Component class="javax.swing.JTable" name="paymentsTable">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="6" rowCount="0">
-                <Column editable="true" title="Due Date" type="java.lang.Object"/>
-                <Column editable="true" title="Type" type="java.lang.Object"/>
-                <Column editable="true" title="Account No" type="java.lang.Object"/>
-                <Column editable="true" title="Name" type="java.lang.Object"/>
-                <Column editable="true" title="Amount" type="java.lang.Object"/>
-                <Column editable="true" title="Reference" type="java.lang.Object"/>
-              </Table>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;    },&#xa;    new String [] {&#xa;        paysupResource.getString(&quot;MainFrame.jLabel1.text&quot;), paysupResource.getString(&quot;MainFrame.jLabel2.text&quot;), paysupResource.getString(&quot;MainFrame.jLabel3.text&quot;), paysupResource.getString(&quot;MainFrame.jLabel4.text&quot;), paysupResource.getString(&quot;DUE DATE&quot;), paysupResource.getString(&quot;REFERENCE&quot;)&#xa;    }&#xa;) {&#xa;}" type="code"/>
             </Property>
-            <Property name="autoResizeMode" type="int" value="0"/>
+            <Property name="autoResizeMode" type="int" value="4"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -314,6 +297,13 @@
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="PaysupResource.properties" key="REFERENCE" replaceFormat="paysupResource.getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="accountTypesComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
         </Property>
       </Properties>
     </Component>
